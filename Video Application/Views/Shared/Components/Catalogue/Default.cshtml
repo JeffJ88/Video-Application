@@ -1,0 +1,42 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div id="videoPlayer">
+    <video id="player" controls style="width:100%;">
+        <source id="videoSource" src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+<table class="table table-bordered"> 
+    <thead>
+        <tr>
+            <th>Video File Name</th>
+            <th>File Size (KB)</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>FileName</td>
+            <td></td>
+            <td>
+                <button onclick="playVideo('FileName')">Play</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+<script>
+    function playVideo(fileName) {
+        var player = document.getElementById('player');
+        var source = document.getElementById('videoSource');
+        source.src = '/MediaFiles/' + fileName;
+        player.load();
+        document.getElementById('videoPlayer').style.display = 'block';
+    }
+</script>

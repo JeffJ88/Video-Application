@@ -1,54 +1,68 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using Video_Application.Models;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Video_Application.Controllers
 {
-    [ApiController]
     [Route("api/v1/[controller]")]
-    public class VideosController : Controller
+    [ApiController]
+    public class VideosController : ControllerBase
     {
-        private readonly ILogger<VideosController> _logger;
-
-        public VideosController(ILogger<VideosController> logger)
-        {
-            _logger = logger;
-        }
-
-        // Get single video with id 
-        [HttpGet("{id}")]
-        public IActionResult GetVideo() {
-        
-        }
-        // Get all viedos
+        // GET: api/<VideosController>
         [HttpGet]
-        public IActionResult GetVideos()
+        public IEnumerable<string> Get()
         {
-
+            return new string[] { "value1", "value2" };
         }
 
-        // Post video
-        [HttpPost]
-        public IActionResult CreateVideo()
+        // GET api/<VideosController>/5
+        [HttpGet("{id}")]
+        public string Get(int id)
         {
-
-        }
-    
-
-        public IActionResult Index()
-        {
-            return View();
+            return "value";
         }
 
-        public IActionResult Privacy()
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadFiles([FromForm] List<IFormFile> files)
         {
-            return View();
+            if (files == null || files.Count == 0)
+            {
+                return BadRequest("No files received from the upload.");
+            }
+
+            try
+            {
+
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        if (file.Length > 209715200)
+                        {
+                            return BadRequest($"File {file.FileName} exceeds the 200MB size limit.");
+                        }
+
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", file.FileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+                    }
+                }
+                return Ok(new { message = "Files uploaded successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+
+        // DELETE api/<VideosController>/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
